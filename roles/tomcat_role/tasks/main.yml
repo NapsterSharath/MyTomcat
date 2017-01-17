@@ -1,0 +1,60 @@
+- name: Create Tomcat directory
+  file: "path=/home/ec2-user/Tomcat state=directory"
+
+- name: Check if required version of tomcat already exists in the server
+  stat: "path=/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}"
+  register: Version_exists
+
+- name: Download Tomcat binary from Artifactory
+  get_url:
+    url: "http://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_version[0] }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "/home/ec2-user/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    validate_certs: false
+  when: Version_exists.stat.exists == False
+
+- name: Untar Tomcat
+  unarchive:
+    src: "/home/ec2-user/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "/home/ec2-user/Tomcat"
+    remote_src: True
+  when: Version_exists.stat.exists == False
+
+- name: Removing the unwanted files
+  file: "path=/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/{{ item }} state=absent"
+  with_items:
+      - LICENSE
+      - NOTICE
+      - RELEASE-NOTES
+      - RUNNING.txt
+      - webapps
+  when: Version_exists.stat.exists == False
+
+- name: Make bin dir executable
+  file:
+    path: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/bin"
+    state: directory
+    mode: 0755
+    recurse: true
+
+- name: Deploying server.xml with default tomcat_app_role template
+  template:
+    src: server_NonSSL.xml.j2
+    dest: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
+    backup: yes
+  when: SSL is undefined
+
+- name: Deploying server.xml with default tomcat_app_role template
+  template:
+    src: server_SSL.xml.j2
+    dest: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
+    backup: yes
+  when: SSL is defined
+
+- name: Deploying context.xml with default tomcat_app_role template
+  template:
+    src: context.xml.j2
+    dest: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/conf/context.xml"
+    backup: yes
+
+- name: starting Tomcat
+  shell: "nohup /home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/bin/startup.sh"

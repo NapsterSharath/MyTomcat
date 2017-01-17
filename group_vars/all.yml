@@ -1,0 +1,4 @@
+tomcat_version: 7.0.11
+tls_key_password: PASSWORD
+username: UNKNOWN
+SSL: yes

@@ -1,0 +1,2 @@
+[EC2]
+54.153.10.19 ansible_ssh_private_key_file=~/Desktop/AWSKeyPairs/EC2Key.pem

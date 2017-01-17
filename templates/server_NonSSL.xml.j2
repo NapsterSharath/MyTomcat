@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+{{ "This file is managed by Ansible, all changes made manually will be lost" | comment('xml') }}
+
+<Server port=8081 shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on"/>
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+  <GlobalNamingResources>
+    <Resource name="UserDatabase" auth="Container"
+              type="org.apache.catalina.UserDatabase"
+              description="User database that can be updated and saved"
+              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+              pathname="conf/tomcat-users.xml"/>
+  </GlobalNamingResources>
+  <Service name="Catalina">
+    <Connector port=8080
+               protocol="org.apache.coyote.http11.Http11NioProtocol"
+               connectionTimeout=20000
+               maxThreads=150
+               minSpareThreads=4
+               compression=on
+               URIEncoding="UTF-8"
+               sslProtocol="TLSv1.2"
+               scheme=http
+               SSLEnabled=false
+               clientAuth=false
+               secure=false/>
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
+      </Realm>
+      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="false">
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               suffix=".log"
+      </Host>
+    </Engine>
+  </Service>
+</Server>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <Resource auth="Container"
+        maxIdle="10"
+        validationQuery="select 1 from dual"
+        driverClassName="oracle.jdbc.OracleDriver"
+        removeAbandonedTimeout="5"
+        maxActive="20"
+        username="{{ username | default('MISSING') }}"
+        logAbandoned="true"
+        maxWait="1000"
+        removeAbandoned="true"
+        type="javax.sql.DataSource" />
+
+</Context>
