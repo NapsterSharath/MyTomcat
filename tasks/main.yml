@@ -26,7 +26,6 @@
       - NOTICE
       - RELEASE-NOTES
       - RUNNING.txt
-      - webapps
   when: Version_exists.stat.exists == False
 
 - name: Make bin dir executable
@@ -35,26 +34,6 @@
     state: directory
     mode: 0755
     recurse: true
-
-- name: Deploying server.xml with default tomcat_app_role template
-  template:
-    src: server_NonSSL.xml.j2
-    dest: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
-    backup: yes
-  when: SSL is undefined
-
-- name: Deploying server.xml with default tomcat_app_role template
-  template:
-    src: server_SSL.xml.j2
-    dest: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
-    backup: yes
-  when: SSL is defined
-
-- name: Deploying context.xml with default tomcat_app_role template
-  template:
-    src: context.xml.j2
-    dest: "/home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/conf/context.xml"
-    backup: yes
 
 - name: starting Tomcat
   shell: "nohup /home/ec2-user/Tomcat/apache-tomcat-{{ tomcat_version }}/bin/startup.sh"
